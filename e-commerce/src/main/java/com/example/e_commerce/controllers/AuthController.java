@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.example.e_commerce.dto.AuthResponse;
+import com.example.e_commerce.dto.LoginRequest;
+import com.example.e_commerce.dto.RegisterRequest;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -38,14 +41,14 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> createAuthenticationToken(@RequestBody User user) throws Exception {
+    public ResponseEntity<AuthResponse> createAuthenticationToken(@RequestBody LoginRequest request) throws Exception {
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
+                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
 
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
         final String jwt = jwtUtil.generateToken(userDetails);
 
-        return ResponseEntity.ok(jwt);
+        return ResponseEntity.ok(new AuthResponse(jwt));
     }
 }
